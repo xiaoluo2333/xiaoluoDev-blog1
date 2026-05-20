@@ -1,0 +1,309 @@
+<!DOCTYPE html>
+<html lang="zh-CN" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin - XiaoluoDev Blog</title>
+    <link rel="stylesheet" th:href="@{/assets/main.css}">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/vditor@3.9.9/dist/index.css">
+    <link rel="icon" th:href="@{/assets/favicon.ico}">
+    <script src="https://cdn.jsdelivr.net/npm/vditor@3.9.9/dist/index.min.js"></script>
+</head>
+<body>
+
+<div id="app">
+
+    <div v-if="!isLoggedIn" class="min-h-screen flex items-center justify-center bg-gray-50">
+        <div class="w-full max-w-sm px-6">
+            <div class="text-center mb-8">
+                <h1 class="text-lg font-bold text-gray-900">Admin 登录</h1>
+                <p class="text-sm text-gray-400 mt-1">输入管理员账号登录喵～</p>
+            </div>
+
+            <div v-if="loginError" class="text-center mb-4">
+                <p class="text-sm text-red-400">{{ loginError }}</p>
+            </div>
+
+            <form @submit.prevent="handleAdminLogin" class="space-y-4">
+                <div>
+                    <label class="block text-sm text-gray-600 mb-1">用户名</label>
+                    <input type="text" v-model="adminLoginForm.username"
+                           class="input-field" placeholder="管理员用户名" required>
+                </div>
+                <div>
+                    <label class="block text-sm text-gray-600 mb-1">密码</label>
+                    <input type="password" v-model="adminLoginForm.password"
+                           class="input-field" placeholder="管理员密码" required>
+                </div>
+                <button type="submit" :disabled="loginLoading"
+                        class="btn btn-primary w-full justify-center">
+                    {{ loginLoading ? '登录中喵～' : '登录' }}
+                </button>
+            </form>
+
+            <div class="text-center mt-6">
+                <a th:href="@{/}" href="/" class="text-xs text-gray-400 hover:text-gray-600 underline">
+                    返回首页
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <div v-else class="flex">
+
+        <aside class="sidebar">
+            <div class="sidebar-brand">XiaoluoDev</div>
+            <nav class="sidebar-nav">
+                <div class="nav-item" :class="{ active: currentPanel === 'dashboard' }"
+                     @click="currentPanel = 'dashboard'">
+                    <span>📊 Dashboard</span>
+                </div>
+                <div class="nav-item" :class="{ active: currentPanel === 'posts' }"
+                     @click="currentPanel = 'posts'">
+                    <span>📝 文章管理</span>
+                </div>
+                <div class="nav-item" :class="{ active: currentPanel === 'files' }"
+                     @click="currentPanel = 'files'">
+                    <span>📁 文件管理</span>
+                </div>
+                <div class="nav-item" :class="{ active: currentPanel === 'plugins' }"
+                     @click="currentPanel = 'plugins'">
+                    <span>🔌 插件管理</span>
+                </div>
+            </nav>
+        </aside>
+
+        <div class="main-content flex-1">
+
+            <header class="topbar">
+                <div class="flex items-center space-x-4">
+                    <span class="text-sm text-gray-500">{{ adminInfo?.username || '管理员' }}</span>
+                    <button @click="handleLogout" class="btn btn-outline btn-sm">登出</button>
+                </div>
+            </header>
+
+            <div class="content-area">
+
+                <div v-if="currentPanel === 'dashboard'">
+                    <h2 class="text-xl font-bold text-gray-900 mb-2">Dashboard</h2>
+                    <p class="text-sm text-gray-400 mb-6">欢迎回来喵～ (ฅ´ω`ฅ)</p>
+                    <div class="bg-white border border-gray-100 rounded-xl p-6">
+                        <p class="text-sm text-gray-600">
+                            这里是 XiaoluoDev Blog 的管理后台的说～
+                            可以用侧边栏的导航来管理文章、文件和插件喵！
+                        </p>
+                    </div>
+                </div>
+
+                <div v-if="currentPanel === 'posts'">
+                    <div class="flex items-center justify-between mb-6">
+                        <h2 class="text-xl font-bold text-gray-900">文章管理</h2>
+                        <button @click="openCreatePost" class="btn btn-primary">+ 新建文章</button>
+                    </div>
+
+                    <div class="bg-white border border-gray-100 rounded-xl overflow-hidden">
+                        <table class="table-minimal">
+                            <thead>
+                                <tr>
+                                    <th>ID</th>
+                                    <th>标题</th>
+                                    <th>状态</th>
+                                    <th>日期</th>
+                                    <th>操作</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr v-for="post in postList" :key="post.id">
+                                    <td class="text-gray-400 text-xs">{{ post.id }}</td>
+                                    <td class="font-medium">{{ post.title }}</td>
+                                    <td>
+                                        <span class="status-badge"
+                                              :class="post.status === 'PUBLISHED' ? 'published' : 'draft'">
+                                            {{ post.status === 'PUBLISHED' ? '已发布' : '草稿' }}
+                                        </span>
+                                    </td>
+                                    <td class="text-gray-400 text-xs">{{ formatDate(post.createdAt) }}</td>
+                                    <td>
+                                        <div class="flex space-x-2">
+                                            <button @click="openEditPost(post)"
+                                                    class="btn btn-outline btn-sm">编辑</button>
+                                            <button @click="deletePost(post.id)"
+                                                    class="btn btn-danger btn-sm">删除</button>
+                                        </div>
+                                    </td>
+                                </tr>
+                                <tr v-if="postList.length === 0">
+                                    <td colspan="5" class="text-center text-gray-300 text-sm py-10">
+                                        还没有文章喵～
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+
+                    <div v-if="postTotalPages > 0"
+                         class="flex items-center justify-between mt-4 text-xs text-gray-400">
+                        <span>第 {{ postCurrentPage + 1 }} / {{ postTotalPages }} 页</span>
+                        <div class="flex space-x-2">
+                            <button :disabled="postCurrentPage === 0"
+                                    @click="fetchPosts(postCurrentPage - 1)"
+                                    class="btn btn-outline btn-sm">‹ 上一页</button>
+                            <button :disabled="postCurrentPage >= postTotalPages - 1"
+                                    @click="fetchPosts(postCurrentPage + 1)"
+                                    class="btn btn-outline btn-sm">下一页 ›</button>
+                        </div>
+                    </div>
+                </div>
+
+                <div v-if="currentPanel === 'files'">
+                    <div class="flex items-center justify-between mb-6">
+                        <h2 class="text-xl font-bold text-gray-900">文件管理</h2>
+                        <div class="flex space-x-3">
+                            <button @click="showCreateFolderInput = true"
+                                    class="btn btn-outline">+ 新建文件夹</button>
+                            <form @submit.prevent="handleUploadFile" class="flex items-center space-x-2">
+                                <input type="file" ref="fileInput"
+                                       class="text-xs text-gray-500" required>
+                                <button type="submit" :disabled="fileUploading"
+                                        class="btn btn-primary btn-sm">
+                                    {{ fileUploading ? '上传中...' : '上传文件' }}
+                                </button>
+                            </form>
+                        </div>
+                    </div>
+
+                    <div v-if="showCreateFolderInput" class="mb-4 flex items-center space-x-2">
+                        <input type="text" v-model="newFolderName"
+                               placeholder="文件夹名称喵～"
+                               class="input-field max-w-xs" @keyup.enter="createFolder">
+                        <button @click="createFolder" class="btn btn-primary btn-sm">确定</button>
+                        <button @click="showCreateFolderInput = false; newFolderName = ''"
+                                class="btn btn-outline btn-sm">取消</button>
+                    </div>
+
+                    <div class="mb-4 breadcrumb">
+                        <span class="breadcrumb-item" @click="currentFolderId = null; fetchFiles()">根目录</span>
+                        <span v-if="currentFolderId" class="breadcrumb-separator">›</span>
+                    </div>
+
+                    <div class="bg-white border border-gray-100 rounded-xl p-2">
+                        <div v-for="file in fileList" :key="file.id"
+                             class="file-tree-item flex items-center justify-between">
+                            <div class="flex items-center space-x-3 min-w-0 flex-1"
+                                 @click="file.isFolder ? openFolder(file.id) : null"
+                                 :style="{ cursor: file.isFolder ? 'pointer' : 'default' }">
+                                <span>{{ file.isFolder ? '📁' : '📄' }}</span>
+                                <span class="truncate">{{ file.fileName }}</span>
+                                <span v-if="!file.isFolder && file.fileSize"
+                                      class="text-xs text-gray-300">
+                                    {{ formatFileSize(file.fileSize) }}
+                                </span>
+                            </div>
+                            <button @click="deleteFile(file.id, file.fileName)"
+                                    class="text-xs text-red-300 hover:text-red-500 ml-2 flex-shrink-0">
+                                删除
+                            </button>
+                        </div>
+                        <div v-if="fileList.length === 0"
+                             class="text-center text-gray-300 text-sm py-8">
+                            暂无文件喵～
+                        </div>
+                    </div>
+                </div>
+
+                <div v-if="currentPanel === 'plugins'">
+                    <div class="flex items-center justify-between mb-6">
+                        <h2 class="text-xl font-bold text-gray-900">插件管理</h2>
+                        <span class="text-xs text-gray-400">已加载 {{ pluginList.length }} 个插件</span>
+                    </div>
+
+                    <div class="space-y-3">
+                        <div v-for="plugin in pluginList" :key="plugin.pluginId || plugin.id"
+                             class="bg-white border border-gray-100 rounded-xl p-5">
+                            <div class="flex items-start justify-between">
+                                <div>
+                                    <h3 class="text-sm font-medium text-gray-900">
+                                        {{ plugin.pluginName || plugin.pluginId }}
+                                    </h3>
+                                    <div class="flex items-center space-x-3 mt-1 text-xs text-gray-400">
+                                        <span v-if="plugin.pluginId">
+                                            ID: {{ plugin.pluginId }}
+                                        </span>
+                                        <span v-if="plugin.version">v{{ plugin.version }}</span>
+                                        <span v-if="plugin.author">作者: {{ plugin.author }}</span>
+                                    </div>
+                                    <p v-if="plugin.description"
+                                       class="text-xs text-gray-400 mt-2">
+                                        {{ plugin.description }}
+                                    </p>
+                                </div>
+                                <span class="status-badge published">已加载</span>
+                            </div>
+                        </div>
+                        <div v-if="pluginList.length === 0"
+                             class="text-center text-gray-300 text-sm py-10">
+                            暂无已加载的插件喵～
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </div>
+
+    <div v-if="showPostEditor" class="modal-overlay" @click.self="closePostEditor">
+        <div class="modal-content">
+            <div class="flex items-center justify-between mb-5">
+                <h3 class="text-base font-semibold text-gray-900">
+                    {{ editingPost ? '编辑文章' : '新建文章' }}
+                </h3>
+                <button @click="closePostEditor" class="text-gray-300 hover:text-gray-600 text-xl leading-none">&times;</button>
+            </div>
+
+            <div class="space-y-4">
+                <div>
+                    <label class="block text-xs text-gray-500 mb-1">标题</label>
+                    <input type="text" v-model="postForm.title" class="input-field" placeholder="文章标题喵～">
+                </div>
+                <div class="flex space-x-4">
+                    <div class="flex-1">
+                        <label class="block text-xs text-gray-500 mb-1">Slug（可选，自动生成）</label>
+                        <input type="text" v-model="postForm.slug" class="input-field" placeholder="url-alias">
+                    </div>
+                    <div class="w-32">
+                        <label class="block text-xs text-gray-500 mb-1">状态</label>
+                        <select v-model="postForm.status" class="input-field">
+                            <option value="DRAFT">草稿</option>
+                            <option value="PUBLISHED">发布</option>
+                        </select>
+                    </div>
+                </div>
+                <div>
+                    <label class="block text-xs text-gray-500 mb-1">摘要</label>
+                    <input type="text" v-model="postForm.summary" class="input-field" placeholder="文章摘要喵～">
+                </div>
+                <div>
+                    <label class="block text-xs text-gray-500 mb-1">标签（逗号分隔）</label>
+                    <input type="text" v-model="postForm.tags" class="input-field" placeholder="java, spring, 喵">
+                </div>
+                <div>
+                    <label class="block text-xs text-gray-500 mb-1">内容（Markdown）</label>
+                    <div id="vditor-container"></div>
+                </div>
+            </div>
+
+            <div class="flex justify-end space-x-3 mt-6">
+                <button @click="closePostEditor" class="btn btn-outline">取消</button>
+                <button @click="savePost" :disabled="postSaving"
+                        class="btn btn-primary">
+                    {{ postSaving ? '保存中喵～' : '保存' }}
+                </button>
+            </div>
+        </div>
+    </div>
+
+</div>
+
+<script th:src="@{/assets/main.bundle.js}"></script>
+</body>
+</html>

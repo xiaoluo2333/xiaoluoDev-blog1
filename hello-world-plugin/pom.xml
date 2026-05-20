@@ -1,0 +1,85 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
+
+    <!--
+        喵～ HelloWorld 插件的 Maven 构建文件！
+        这是咱博客插件系统的第一个示例插件，
+        独立构建，打包成 JAR 放到 plugins/ 目录下就能用啦～
+    -->
+
+    <modelVersion>4.0.0</modelVersion>
+
+    <!-- ===== 项目坐标 ===== -->
+    <groupId>xl.xldevblog</groupId>
+    <artifactId>hello-world-plugin</artifactId>
+    <version>1.0.0</version>
+    <packaging>jar</packaging>
+
+    <name>HelloWorld Plugin</name>
+    <description>喵～ 第一个示例插件！(｀・ω・´)</description>
+
+    <!-- ===== 属性配置 ===== -->
+    <properties>
+        <java.version>25</java.version>
+        <maven.compiler.source>25</maven.compiler.source>
+        <maven.compiler.target>25</maven.compiler.target>
+        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+    </properties>
+
+    <!-- ===== 依赖管理 ===== -->
+    <dependencies>
+        <!--
+            喵～ 依赖主项目的 Plugin 接口和相关类！
+            主项目的 artifactId 是 blog，版本 1.0.0，
+            包含了 Plugin、PluginController、RouteDefinition 等核心接口。
+            scope 设为 provided，打包时不会包含进去，
+            因为运行时主项目已经提供这些类了喵～
+        -->
+        <dependency>
+            <groupId>xl.xldevblog</groupId>
+            <artifactId>blog</artifactId>
+            <version>1.0.0</version>
+            <scope>provided</scope>
+        </dependency>
+    </dependencies>
+
+    <!-- ===== 构建配置 ===== -->
+    <build>
+        <plugins>
+            <!--
+                喵～ Java 编译插件！
+                用 Java 25 编译代码，跟上时代的步伐～
+            -->
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-compiler-plugin</artifactId>
+                <version>3.11.0</version>
+                <configuration>
+                    <source>25</source>
+                    <target>25</target>
+                </configuration>
+            </plugin>
+
+            <!--
+                喵～ JAR 打包插件！
+                打包时在 MANIFEST.MF 里记录插件 ID 和版本，
+                方便系统识别和管理插件喵～
+            -->
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-jar-plugin</artifactId>
+                <configuration>
+                    <archive>
+                        <manifestEntries>
+                            <Plugin-Id>hello-world</Plugin-Id>
+                            <Plugin-Version>1.0.0</Plugin-Version>
+                        </manifestEntries>
+                    </archive>
+                </configuration>
+            </plugin>
+        </plugins>
+    </build>
+
+</project>

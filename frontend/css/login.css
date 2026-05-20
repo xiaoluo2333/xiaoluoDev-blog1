@@ -1,0 +1,59 @@
+/**
+ * ============================================
+ * 喵～ login.css — 登录/注册页样式
+ * ============================================
+ * 登录和注册页面的专属样式，包括：
+ * - Tab 切换按钮（登录/注册的模式切换）
+ * - 表单卡片布局
+ * - 输入框焦点特效
+ * - 提交按钮动画
+ * ============================================
+ */
+
+/* Tab 切换按钮 */
+.tab-btn {
+  font-size: 0.9rem;
+  color: #999;
+  cursor: pointer;
+  transition: color 0.15s ease;
+  position: relative;
+  padding-bottom: 4px;
+}
+.tab-btn.active {
+  color: #3b82f6;
+  font-weight: 600;
+}
+.tab-btn.active::after {
+  content: '';
+  position: absolute;
+  bottom: -8px;
+  left: 0;
+  right: 0;
+  height: 2px;
+  background: #3b82f6;
+  border-radius: 1px;
+}
+
+/* 表单卡片容器 */
+.form-card {
+  max-width: 400px;
+  margin: 0 auto;
+}
+
+/* 提交按钮 */
+.submit-btn {
+  transition: background 0.15s ease;
+}
+.submit-btn:hover:not(:disabled) {
+  background: #2563eb;
+}
+
+/* 记住我复选框 */
+.checkbox-custom {
+  width: 16px;
+  height: 16px;
+  border: 1px solid #d1d5db;
+  border-radius: 4px;
+  cursor: pointer;
+  accent-color: #3b82f6;
+}

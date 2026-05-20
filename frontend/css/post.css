@@ -1,0 +1,126 @@
+/**
+ * ============================================
+ * 喵～ post.css — 文章详情页样式
+ * ============================================
+ * 文章详情页的专属样式，包括：
+ * - Markdown 渲染内容的排版
+ * - 代码高亮容器
+ * - 附件列表样式
+ * - 响应式调整
+ * ============================================
+ */
+
+/* ===== Markdown 渲染内容样式 ===== */
+.markdown-body {
+  font-size: 1rem;
+  line-height: 1.8;
+  color: #1a1a1a;
+}
+.markdown-body h1,
+.markdown-body h2,
+.markdown-body h3,
+.markdown-body h4 {
+  font-weight: 600;
+  margin-top: 1.8em;
+  margin-bottom: 0.6em;
+  color: #111;
+  line-height: 1.4;
+}
+.markdown-body h1 { font-size: 1.6rem; }
+.markdown-body h2 { font-size: 1.35rem; }
+.markdown-body h3 { font-size: 1.15rem; }
+.markdown-body p {
+  margin-bottom: 1em;
+}
+.markdown-body ul,
+.markdown-body ol {
+  margin-bottom: 1em;
+  padding-left: 1.5em;
+}
+.markdown-body li {
+  margin-bottom: 0.3em;
+}
+.markdown-body blockquote {
+  border-left: 3px solid #e5e7eb;
+  padding-left: 1em;
+  color: #888;
+  margin: 1em 0;
+  font-style: italic;
+}
+.markdown-body code {
+  font-family: "SF Mono", "Fira Code", "Fira Mono", Menlo, Consolas, monospace;
+  font-size: 0.875em;
+  background: #f0f0f0;
+  padding: 2px 6px;
+  border-radius: 4px;
+}
+.markdown-body pre {
+  background: #f6f8fa;
+  border: 1px solid #e5e5e5;
+  border-radius: 8px;
+  padding: 16px;
+  overflow-x: auto;
+  margin: 1em 0;
+}
+.markdown-body pre code {
+  background: none;
+  padding: 0;
+  font-size: 0.85rem;
+  line-height: 1.6;
+}
+.markdown-body img {
+  max-width: 100%;
+  height: auto;
+  border-radius: 8px;
+  margin: 1em 0;
+}
+.markdown-body a {
+  color: #3b82f6;
+  text-decoration: none;
+}
+.markdown-body a:hover {
+  text-decoration: underline;
+}
+.markdown-body hr {
+  border: none;
+  border-top: 1px solid #eee;
+  margin: 2em 0;
+}
+.markdown-body table {
+  width: 100%;
+  border-collapse: collapse;
+  margin: 1em 0;
+}
+.markdown-body th,
+.markdown-body td {
+  border: 1px solid #e5e5e5;
+  padding: 8px 12px;
+  text-align: left;
+}
+.markdown-body th {
+  background: #f6f8fa;
+  font-weight: 600;
+}
+
+/* ===== 附件列表样式 ===== */
+.file-item {
+  transition: background 0.15s ease;
+}
+.file-item:hover {
+  background: #f5f5f5;
+}
+
+/* ===== 响应式调整 ===== */
+@media (max-width: 640px) {
+  .markdown-body {
+    font-size: 0.95rem;
+  }
+  .markdown-body h1 { font-size: 1.35rem; }
+  .markdown-body h2 { font-size: 1.2rem; }
+  .markdown-body h3 { font-size: 1.05rem; }
+  .markdown-body pre {
+    padding: 12px;
+    margin: 0.8em -4px;
+    border-radius: 6px;
+  }
+}

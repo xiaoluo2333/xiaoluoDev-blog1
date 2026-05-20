@@ -1,0 +1,224 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>喵～ HelloWorld 插件</title>
+    <style>
+        /*
+         * 喵～ 极简风格的页面样式！
+         * 干净清爽，让内容自己说话～
+         */
+
+        /* ===== 全局重置 ===== */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        /* ===== 页面背景 ===== */
+        body {
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-family: 'Segoe UI', 'PingFang SC', 'Microsoft YaHei', sans-serif;
+            background: linear-gradient(135deg, #fce4ec 0%, #f8bbd0 50%, #f48fb1 100%);
+            padding: 20px;
+        }
+
+        /* ===== 主卡片容器 ===== */
+        .container {
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 24px;
+            padding: 48px 40px;
+            max-width: 480px;
+            width: 100%;
+            text-align: center;
+            box-shadow: 0 20px 60px rgba(233, 30, 99, 0.15),
+                        0 8px 20px rgba(0, 0, 0, 0.08);
+            backdrop-filter: blur(10px);
+            transition: transform 0.3s ease;
+        }
+
+        .container:hover {
+            transform: translateY(-2px);
+        }
+
+        /* ===== 标题样式 ===== */
+        h1 {
+            font-size: 28px;
+            color: #c2185b;
+            margin-bottom: 12px;
+            font-weight: 700;
+            letter-spacing: 1px;
+        }
+
+        /* ===== 副标题/描述 ===== */
+        .subtitle {
+            font-size: 15px;
+            color: #888;
+            margin-bottom: 36px;
+            line-height: 1.6;
+        }
+
+        /* ===== 插画区域 ===== */
+        .icon {
+            font-size: 72px;
+            margin-bottom: 20px;
+            display: block;
+            animation: wave 2s ease-in-out infinite;
+        }
+
+        @keyframes wave {
+            0%, 100% { transform: rotate(0deg); }
+            25% { transform: rotate(-10deg); }
+            75% { transform: rotate(10deg); }
+        }
+
+        /* ===== 按钮样式 ===== */
+        #helloBtn {
+            display: inline-block;
+            padding: 14px 40px;
+            font-size: 16px;
+            font-weight: 600;
+            color: #fff;
+            background: linear-gradient(135deg, #ec407a, #d81b60);
+            border: none;
+            border-radius: 50px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 6px 20px rgba(233, 30, 99, 0.3);
+            letter-spacing: 0.5px;
+        }
+
+        #helloBtn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 10px 28px rgba(233, 30, 99, 0.4);
+            background: linear-gradient(135deg, #f06292, #e91e63);
+        }
+
+        #helloBtn:active {
+            transform: translateY(0);
+            box-shadow: 0 4px 12px rgba(233, 30, 99, 0.3);
+        }
+
+        /* ===== 消息显示区域 ===== */
+        #messageArea {
+            margin-top: 24px;
+            padding: 16px 20px;
+            border-radius: 12px;
+            font-size: 14px;
+            line-height: 1.6;
+            color: #c2185b;
+            background: #fce4ec;
+            min-height: 20px;
+            transition: all 0.3s ease;
+            opacity: 0;
+            transform: translateY(10px);
+        }
+
+        #messageArea.show {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        /* ===== 页脚 ===== */
+        .footer {
+            margin-top: 32px;
+            font-size: 12px;
+            color: #bbb;
+        }
+
+        .footer span {
+            color: #ec407a;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        <!-- 喵～ 可爱的猫爪插画 -->
+        <span class="icon">🐱</span>
+
+        <!-- 标题 -->
+        <h1>喵～ Hello World！(｀・ω・´)</h1>
+
+        <!-- 副标题 -->
+        <p class="subtitle">
+            欢迎来到 HelloWorld 插件～<br>
+            这是一个用插件系统构建的示例页面喵！
+        </p>
+
+        <!-- 按钮：点我测试插件功能 -->
+        <button id="helloBtn">点我测试插件功能</button>
+
+        <!-- 消息显示区域：后端返回的消息会显示在这里 -->
+        <div id="messageArea"></div>
+
+        <!-- 页脚 -->
+        <div class="footer">
+            由 <span>♥</span> Xiaoluo 制作 · HelloWorld Plugin v1.0.0
+        </div>
+    </div>
+
+    <script>
+        /*
+         * 喵～ 插件前端交互脚本！
+         * 当用户点击按钮时，会向后端发送请求，
+         * 然后把结果显示在页面上～
+         */
+
+        (function() {
+            'use strict';
+
+            // 获取页面元素
+            var btn = document.getElementById('helloBtn');
+            var messageArea = document.getElementById('messageArea');
+
+            // 喵～ 按钮点击事件
+            btn.addEventListener('click', function() {
+                // 1. 在浏览器控制台输出欢迎信息
+                console.log('Hello World from Plugin! 🎉');
+
+                // 2. 发送 POST 请求到后端插件接口
+                var xhr = new XMLHttpRequest();
+                xhr.open('POST', '/plugin/hello/click', true);
+                xhr.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded');
+
+                // 3. 处理响应
+                xhr.onload = function() {
+                    if (xhr.status === 200) {
+                        try {
+                            var response = JSON.parse(xhr.responseText);
+                            if (response.success) {
+                                // 显示后端返回的消息
+                                messageArea.textContent = response.message || '后端已收到消息喵～';
+                            } else {
+                                messageArea.textContent = '喵呜… 出错了：' + (response.message || '未知错误');
+                            }
+                        } catch (e) {
+                            messageArea.textContent = '后端已收到消息喵～';
+                        }
+                    } else {
+                        messageArea.textContent = '喵呜… 请求失败了 (´;ω;｀)';
+                    }
+                    // 显示消息区域
+                    messageArea.classList.add('show');
+                };
+
+                // 4. 处理网络错误
+                xhr.onerror = function() {
+                    messageArea.textContent = '喵呜… 网络连接失败了 (´;ω;｀)';
+                    messageArea.classList.add('show');
+                };
+
+                // 5. 发送请求
+                xhr.send();
+            });
+        })();
+    </script>
+
+</body>
+</html>

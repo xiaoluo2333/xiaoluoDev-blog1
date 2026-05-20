@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html lang="zh-CN" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>登录 / 注册 - XiaoluoDev Blog</title>
+    <link rel="stylesheet" th:href="@{/assets/main.css}">
+    <link rel="icon" th:href="@{/assets/favicon.ico}">
+</head>
+<body>
+
+<div id="app">
+
+    <header class="bg-white border-b border-gray-100">
+        <div class="container-main flex items-center justify-between h-16">
+            <a th:href="@{/}" href="/"
+               class="text-lg font-semibold tracking-tight text-gray-900 no-underline">
+                XiaoluoDev Blog
+            </a>
+            <nav class="flex items-center space-x-6 text-sm">
+                <a th:href="@{/}" href="/" class="nav-link no-underline">主页</a>
+                <a th:href="@{/login}" href="/login" class="nav-link no-underline">登录</a>
+                <a th:href="@{/admin}" href="/admin" class="nav-link no-underline">Admin</a>
+            </nav>
+        </div>
+    </header>
+
+    <main class="flex-1 flex items-center justify-center py-16" style="min-height: calc(100vh - 64px - 64px);">
+        <div class="form-card w-full px-4">
+
+            <div class="text-center mb-8">
+                <h1 class="text-xl font-bold text-gray-900">
+                    {{ isLogin ? '欢迎回来喵～' : '加入我们喵～' }}
+                </h1>
+                <p class="text-sm text-gray-400 mt-1">
+                    {{ isLogin ? '登录以访问更多功能的说' : '创建一个新账户的说' }}
+                </p>
+            </div>
+
+            <div class="flex items-center justify-center space-x-10 mb-8">
+                <span class="tab-btn" :class="{ active: isLogin }" @click="isLogin = true">
+                    登录
+                </span>
+                <span class="tab-btn" :class="{ active: !isLogin }" @click="isLogin = false">
+                    注册
+                </span>
+            </div>
+
+            <div v-if="message" class="text-center mb-6">
+                <p v-if="messageType === 'success'"
+                   class="text-sm text-green-500">
+                    {{ message }}
+                </p>
+                <p v-else class="text-sm text-red-400">
+                    {{ message }}
+                </p>
+            </div>
+
+            <form v-if="isLogin" @submit.prevent="handleLogin" class="space-y-5">
+                <div>
+                    <label class="block text-sm text-gray-600 mb-1.5">用户名</label>
+                    <input type="text" v-model="loginForm.username"
+                           class="input-field w-full px-4 py-2.5 bg-white border border-gray-200 rounded-lg text-sm"
+                           placeholder="输入用户名喵～" required>
+                </div>
+                <div>
+                    <label class="block text-sm text-gray-600 mb-1.5">密码</label>
+                    <input type="password" v-model="loginForm.password"
+                           class="input-field w-full px-4 py-2.5 bg-white border border-gray-200 rounded-lg text-sm"
+                           placeholder="输入密码喵～" required>
+                </div>
+                <div class="flex items-center">
+                    <input type="checkbox" id="rememberMe" v-model="loginForm.rememberMe"
+                           class="checkbox-custom">
+                    <label for="rememberMe" class="ml-2 text-sm text-gray-500 cursor-pointer">
+                        记住我
+                    </label>
+                </div>
+                <button type="submit" :disabled="loginLoading"
+                        class="btn btn-primary w-full justify-center">
+                    {{ loginLoading ? '登录中喵～' : '登录' }}
+                </button>
+            </form>
+
+            <form v-else @submit.prevent="handleRegister" class="space-y-5">
+                <div>
+                    <label class="block text-sm text-gray-600 mb-1.5">用户名</label>
+                    <input type="text" v-model="registerForm.username"
+                           class="input-field w-full px-4 py-2.5 bg-white border border-gray-200 rounded-lg text-sm"
+                           placeholder="输入用户名喵～" required>
+                </div>
+                <div>
+                    <label class="block text-sm text-gray-600 mb-1.5">密码</label>
+                    <input type="password" v-model="registerForm.password"
+                           class="input-field w-full px-4 py-2.5 bg-white border border-gray-200 rounded-lg text-sm"
+                           placeholder="输入密码喵～" required>
+                </div>
+                <div>
+                    <label class="block text-sm text-gray-600 mb-1.5">邮箱</label>
+                    <input type="email" v-model="registerForm.email"
+                           class="input-field w-full px-4 py-2.5 bg-white border border-gray-200 rounded-lg text-sm"
+                           placeholder="输入邮箱喵～" required>
+                </div>
+                <button type="submit" :disabled="registerLoading"
+                        class="btn btn-primary w-full justify-center">
+                    {{ registerLoading ? '注册中喵～' : '注册' }}
+                </button>
+            </form>
+        </div>
+    </main>
+
+    <footer class="border-t border-gray-100 py-8">
+        <div class="container-main text-center text-xs text-gray-300">
+            &copy; 2026 XiaoluoDev Blog. Powered by Spring Boot + Vue 3.
+        </div>
+    </footer>
+
+</div>
+
+<script th:src="@{/assets/main.bundle.js}"></script>
+</body>
+</html>

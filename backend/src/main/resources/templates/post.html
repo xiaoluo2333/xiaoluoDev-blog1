@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html lang="zh-CN" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title th:text="${postTitle} ?: '文章详情'">文章详情 - XiaoluoDev Blog</title>
+    <link rel="stylesheet" th:href="@{/assets/main.css}">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/github.min.css">
+    <link rel="icon" th:href="@{/assets/favicon.ico}">
+    <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
+</head>
+<body>
+
+<div id="app">
+
+    <header class="bg-white border-b border-gray-100 sticky top-0 z-10">
+        <div class="container-main flex items-center justify-between h-16">
+            <a th:href="@{/}" href="/"
+               class="text-lg font-semibold tracking-tight text-gray-900 no-underline">
+                XiaoluoDev Blog
+            </a>
+            <nav class="flex items-center space-x-6 text-sm">
+                <a th:href="@{/}" href="/" class="nav-link no-underline">主页</a>
+                <a th:href="@{/login}" href="/login" class="nav-link no-underline">登录</a>
+                <a th:href="@{/admin}" href="/admin" class="nav-link no-underline">Admin</a>
+            </nav>
+        </div>
+    </header>
+
+    <main class="container-main py-10">
+
+        <div v-if="loading" class="text-center py-20">
+            <div class="text-gray-300 text-sm">加载中喵～</div>
+        </div>
+
+        <div v-else-if="error" class="text-center py-20">
+            <p class="text-gray-400 text-sm">{{ error }}</p>
+            <a th:href="@{/}" href="/"
+               class="inline-block mt-4 text-sm text-gray-500 underline hover:text-gray-700">
+                返回首页喵～
+            </a>
+        </div>
+
+        <div v-else-if="post">
+            <h1 class="text-2xl font-bold text-gray-900 mb-4 leading-snug">
+                {{ post.title }}
+            </h1>
+
+            <div class="flex flex-wrap items-center text-sm text-gray-400 mb-8 gap-x-4 gap-y-2">
+                <span v-if="post.authorName">{{ post.authorName }}</span>
+                <span v-if="post.createdAt">{{ formatDate(post.createdAt) }}</span>
+                <span v-if="post.tags">
+                    <span v-for="tag in post.tags.split(',')" :key="tag"
+                          class="tag-badge">
+                        {{ tag.trim() }}
+                    </span>
+                </span>
+            </div>
+
+            <div class="markdown-body" v-html="renderedContent"></div>
+
+            <div v-if="files.length > 0" class="mt-12 pt-8 border-t border-gray-100">
+                <h3 class="text-sm font-medium text-gray-700 mb-4">附件列表喵～</h3>
+                <div class="space-y-1">
+                    <div v-for="file in files" :key="file.id"
+                         class="file-item flex items-center justify-between px-4 py-2.5 rounded-lg">
+                        <div class="flex items-center space-x-3 min-w-0">
+                            <span class="text-gray-300 text-sm flex-shrink-0">
+                                {{ file.isFolder ? '📁' : '📄' }}
+                            </span>
+                            <span class="text-sm text-gray-600 truncate">
+                                {{ file.fileName }}
+                            </span>
+                            <span v-if="!file.isFolder && file.fileSize"
+                                  class="text-xs text-gray-300 flex-shrink-0">
+                                {{ formatFileSize(file.fileSize) }}
+                            </span>
+                        </div>
+                        <a v-if="!file.isFolder"
+                           :href="`/api/files/download/${file.id}`"
+                           class="text-xs text-gray-400 hover:text-gray-700 underline flex-shrink-0 ml-4">
+                            下载
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <footer class="border-t border-gray-100 py-8 mt-10">
+        <div class="container-main text-center text-xs text-gray-300">
+            &copy; 2026 XiaoluoDev Blog. Powered by Spring Boot + Vue 3.
+        </div>
+    </footer>
+
+</div>
+
+<script th:src="@{/assets/main.bundle.js}"></script>
+</body>
+</html>
