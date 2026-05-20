@@ -33,7 +33,10 @@ module.exports = (env, argv) => {
       publicPath: '/assets/'
     },
     resolve: {
-      extensions: ['.ts', '.js', '.json']
+      extensions: ['.ts', '.js', '.json'],
+      alias: {
+        'vue': 'vue/dist/vue.esm-bundler.js'
+      }
     },
     module: {
       rules: [
