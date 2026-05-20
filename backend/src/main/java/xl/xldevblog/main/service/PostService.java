@@ -47,7 +47,7 @@ public class PostService {
      * @return 分页后的已发布文章列表
      */
     public Page<PostResponse> getPosts(int page, int size) {
-        PageRequest pageable = PageRequest.of(page, size, Sort.by(Sort.Direction.DESC, "createdAt"));
+        PageRequest pageable = PageRequest.of(page, size);
         Page<Post> postPage = postRepository.findByStatusOrderByCreatedAtDesc("PUBLISHED", pageable);
         return postPage.map(this::toPostResponse);
     }

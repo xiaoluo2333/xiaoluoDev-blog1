@@ -69,6 +69,12 @@
             <AppenderRef ref="Console"/>
         </Logger>
 
+        <!-- ===== Spring Data PageImpl 序列化警告（设为 ERROR 级别，不显示那个警告） ===== -->
+        <Logger name="org.springframework.data.web" level="ERROR" additivity="false">
+            <AppenderRef ref="Console"/>
+            <AppenderRef ref="RollingFile"/>
+        </Logger>
+
         <!-- ===== 根日志配置 ===== -->
         <Root level="INFO">
             <AppenderRef ref="Console"/>
