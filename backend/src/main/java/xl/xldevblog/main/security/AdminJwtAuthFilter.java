@@ -32,10 +32,11 @@ public class AdminJwtAuthFilter extends OncePerRequestFilter {
     /** 管理员 Token 在 Cookie 中的名称 */
     private static final String TOKEN_COOKIE_NAME = "X-Admin-Token";
 
-    /** 需要进行管理员认证的路径前缀列表 */
+    /** 需要管理员认证的路径前缀列表 */
     private static final List<String> AUTHENTICATED_PATHS = List.of(
             "/admin/",
             "/api/admin/",
+            "/api/auth/admin/me",
             "/api/plugins/",
             "/api/files/"
     );

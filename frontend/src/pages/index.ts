@@ -35,6 +35,25 @@ export function initIndexPage(): void {
       const totalElements = ref(0);
       const pageSize = 10;
 
+      /* 用户登录状态 */
+      const user = ref<{ username: string } | null>(null);
+
+      /*
+       * 检查用户登录状态
+       * API: GET /api/auth/me
+       * Cookie 会自动携带 X-User-Token
+       */
+      async function checkUserLogin(): Promise<void> {
+        try {
+          const result = await get<ApiResponse<{ username: string }>>('/api/auth/me');
+          if (result.success) {
+            user.value = result.data;
+          }
+        } catch {
+          user.value = null;
+        }
+      }
+
       /*
        * 计算分页按钮列表
        * 总页数 ≤ 7：全部显示
@@ -110,12 +129,13 @@ export function initIndexPage(): void {
       }
 
       onMounted(() => {
+        checkUserLogin();
         fetchPosts();
       });
 
       return {
         posts, loading, error, currentPage, totalPages, totalElements,
-        pageNumbers, goToPage, goToPost, formatDate, fetchPosts
+        pageNumbers, goToPage, goToPost, formatDate, fetchPosts, user
       };
     }
   });

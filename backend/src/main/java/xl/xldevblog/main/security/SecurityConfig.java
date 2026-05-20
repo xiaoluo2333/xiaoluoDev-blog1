@@ -97,6 +97,8 @@ public class SecurityConfig {
                         .requestMatchers(
                                 "/admin/**",
                                 "/api/admin/**",
+                                "/api/auth/admin/me",
+                                "/api/posts/admin/**",
                                 "/api/plugins/**"
                         ).hasRole("ADMIN")
 
