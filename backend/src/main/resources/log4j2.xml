@@ -1,0 +1,79 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  ============================================================
+  Log4j2 配置文件
+  喵～ 日志格式：[时间][级别][线程][简略类名] : 消息
+  例： [2026-05-20 20:30:00][INFO][main][x.x.m.BlogBootstrap] : 启动完成喵～
+  ============================================================
+-->
+<Configuration status="WARN" monitorInterval="30">
+
+    <!-- 日志格式属性喵～ -->
+    <Properties>
+        <!-- 主人指定的日志格式：
+             [%d{yyyy-MM-dd HH:mm:ss}]  = 时间戳
+             [%level]                    = 日志级别（INFO, WARN, ERROR...）
+             [%t]                        = 线程名
+             [%logger{1.1.}]             = 简略类名（如 x.x.m.s.AuthService → x.x.m.s.AuthService）
+             : %msg                      = 日志消息
+             %n                          = 换行
+             %ex                         = 异常堆栈（有异常时才输出） -->
+        <Property name="LOG_PATTERN">[%d{yyyy-MM-dd HH:mm:ss}][%level][%t][%logger{1.1.}] : %msg%n%ex</Property>
+        <!-- 日志文件路径 -->
+        <Property name="LOG_DIR">./logs</Property>
+        <Property name="LOG_FILE">blog</Property>
+    </Properties>
+
+    <Appenders>
+        <!-- ===== 控制台输出 ===== -->
+        <Console name="Console" target="SYSTEM_OUT">
+            <PatternLayout pattern="${LOG_PATTERN}"/>
+        </Console>
+
+        <!-- ===== 文件输出（滚动日志） ===== -->
+        <RollingFile name="RollingFile"
+                     fileName="${LOG_DIR}/${LOG_FILE}.log"
+                     filePattern="${LOG_DIR}/${LOG_FILE}-%d{yyyy-MM-dd}-%i.log.gz">
+            <PatternLayout pattern="${LOG_PATTERN}"/>
+            <Policies>
+                <!-- 每天滚动一次 -->
+                <TimeBasedTriggeringPolicy interval="1" modulate="true"/>
+                <!-- 文件超过 10MB 也滚动 -->
+                <SizeBasedTriggeringPolicy size="10 MB"/>
+            </Policies>
+            <!-- 保留最近 7 天的日志，最多 10 个文件 -->
+            <DefaultRolloverStrategy max="10">
+                <Delete basePath="${LOG_DIR}" maxDepth="1">
+                    <IfFileName glob="*-*.log.gz"/>
+                    <IfLastModified age="7d"/>
+                </Delete>
+            </DefaultRolloverStrategy>
+        </RollingFile>
+    </Appenders>
+
+    <Loggers>
+        <!-- ===== 项目自己的日志（包名 xl.xldevblog） ===== -->
+        <Logger name="xl.xldevblog" level="INFO" additivity="false">
+            <AppenderRef ref="Console"/>
+            <AppenderRef ref="RollingFile"/>
+        </Logger>
+
+        <!-- ===== Spring Boot 框架日志（只显示 WARN 及以上的） ===== -->
+        <Logger name="org.springframework" level="WARN" additivity="false">
+            <AppenderRef ref="Console"/>
+            <AppenderRef ref="RollingFile"/>
+        </Logger>
+
+        <!-- ===== Hibernate SQL 日志（想看 SQL 的话改成 DEBUG） ===== -->
+        <Logger name="org.hibernate.SQL" level="WARN" additivity="false">
+            <AppenderRef ref="Console"/>
+        </Logger>
+
+        <!-- ===== 根日志配置 ===== -->
+        <Root level="INFO">
+            <AppenderRef ref="Console"/>
+            <AppenderRef ref="RollingFile"/>
+        </Root>
+    </Loggers>
+
+</Configuration>
