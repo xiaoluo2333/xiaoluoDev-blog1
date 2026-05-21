@@ -81,6 +81,8 @@ public class SecurityConfig {
                                 "/index",
                                 "/login",
                                 "/register",
+                                "/admin",
+                                "/admin/**",
                                 "/post/**",
                                 "/api/auth/login",
                                 "/api/auth/register",
@@ -95,7 +97,6 @@ public class SecurityConfig {
 
                         // ===== 管理员路径（需要 ADMIN 角色） =====
                         .requestMatchers(
-                                "/admin/**",
                                 "/api/admin/**",
                                 "/api/auth/admin/me",
                                 "/api/posts/admin/**",
